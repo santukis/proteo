@@ -1,0 +1,3 @@
+rootProject.name='Proteo'
+include ':app'
+include ':proteo'
