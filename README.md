@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/santukis/proteo.svg)](https://jitpack.io/#santukis/proteo)
+
 # proteo
 Generic Adapters for android (RecyclerView.Adapter, BaseAdapter, BaseExpandableListAdapter, PagerAdapter)
 
