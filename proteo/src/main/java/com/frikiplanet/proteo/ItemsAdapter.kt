@@ -105,6 +105,11 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
         return true
     }
 
+    fun clearItems() {
+        items.clear()
+        notifyDataSetChanged()
+    }
+
     fun updateViewHolderProvider(holderProvider: ViewHolderProvider<Item>) {
         viewHolderProvider = holderProvider
         notifyDataSetChanged()
