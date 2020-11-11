@@ -30,13 +30,17 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
     override fun getItemCount(): Int = items.size
 
     fun showItems(items: List<Item>) {
-        this.items.clear()
-        this.items.addAll(items)
+        this.items = items.toMutableList()
         notifyDataSetChanged()
     }
 
     fun addItems(items: List<Item>) {
         this.items.addAll(items)
+        notifyDataSetChanged()
+    }
+
+    fun addDistinctItems(items: List<Item>) {
+        this.items = this.items.union(items).toMutableList()
         notifyDataSetChanged()
     }
 
