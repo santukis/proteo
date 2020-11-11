@@ -1,4 +1,4 @@
-[![NPM version](https://jitpack.io/com/github/santukis/proteo/latest/javadoc/)]
+![](https://jitpack.io/com/github/santukis/proteo/latest/javadoc/)]
 # proteo
 Generic Adapters for android (RecyclerView.Adapter, BaseAdapter, BaseExpandableListAdapter, PagerAdapter)
 
