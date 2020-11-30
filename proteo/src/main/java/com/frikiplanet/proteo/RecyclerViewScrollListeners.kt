@@ -111,7 +111,7 @@ class EndlessScrollListener(
         private val onEndReached: (Int) -> Unit
 ): RecyclerView.OnScrollListener() {
 
-    private val endReached = AtomicBoolean(false)
+    private val endReached = AtomicBoolean(true)
     private var previousItemCount = 0
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -123,8 +123,9 @@ class EndlessScrollListener(
             }
 
             val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+            val hasMoreItems = layoutManager.childCount < layoutManager.itemCount
 
-            if (lastVisibleItemPosition + threshold > layoutManager.itemCount && !endReached.get()) {
+            if (hasMoreItems && lastVisibleItemPosition + threshold > layoutManager.itemCount && !endReached.get()) {
                 endReached.set(true)
                 onEndReached.invoke(lastVisibleItemPosition)
             }
