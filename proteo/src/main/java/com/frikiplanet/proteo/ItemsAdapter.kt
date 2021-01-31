@@ -3,13 +3,15 @@ package com.frikiplanet.proteo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import java.util.*
+import kotlin.properties.Delegates
 
-class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item>) :
+class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item>,
+                         areItemsTheSame: (Item, Item) -> Boolean = { old, new -> old == new }) :
         RecyclerView.Adapter<ItemsAdapter.ItemViewHolder<Item>>() {
 
-    private var items: MutableList<Item> = mutableListOf()
+    private var items: List<Item> by update(emptyList(), areItemsTheSame = areItemsTheSame)
     private var clickListener: OnItemClickListener? = null
     private var longClickListener: OnItemLongClickListener? = null
 
@@ -30,21 +32,8 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
     override fun getItemCount(): Int = items.size
 
     fun showItems(items: List<Item>) {
-        this.items = items.toMutableList()
-        notifyDataSetChanged()
+        this.items = items
     }
-
-    fun addItems(items: List<Item>) {
-        this.items.addAll(items)
-        notifyDataSetChanged()
-    }
-
-    fun addDistinctItems(items: List<Item>) {
-        this.items = this.items.union(items).toMutableList()
-        notifyDataSetChanged()
-    }
-
-    fun getItems(): List<Item> = items
 
     fun getItemAt(position: Int): Item? =
             try {
@@ -54,60 +43,21 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
             }
 
     fun addItemAt(position: Int, item: Item) {
-        items.add(position, item)
-        notifyItemInserted(position)
+        items = items.toMutableList().apply { add(position, item) }
     }
 
     fun addItemAtEnd(item: Item) {
-        items.add(item)
-        notifyItemInserted(if (items.isEmpty()) 0 else items.lastIndex)
+        items = items.toMutableList().apply { add(item) }
     }
 
     fun removeItemAt(position: Int): Item? {
-        val item = items.removeAt(position)
-        notifyItemRemoved(position)
+        var item: Item?
+        items = items.toMutableList().apply { item = removeAt(position) }
         return item
     }
 
-    fun updateItemAt(position: Int, item: Item) {
-        try {
-            items[position] = item
-            notifyItemChanged(position)
-
-        } catch (exception: Exception) {
-            exception.printStackTrace()
-        }
-    }
-
-    fun updateItems(items: List<Item>) {
-        this.items.forEachIndexed { index, outdatedItem ->
-            items.forEach { updatedItem ->
-                if (outdatedItem == updatedItem) {
-                    this.items[index] = updatedItem
-                    notifyItemChanged(index)
-                }
-            }
-        }
-    }
-
-    fun swapItems(fromPosition: Int, toPosition: Int): Boolean {
-        if (fromPosition < toPosition) {
-            for (i in fromPosition until toPosition) {
-                Collections.swap(items, i, i + 1)
-            }
-        } else {
-            for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(items, i, i - 1)
-            }
-        }
-
-        notifyItemMoved(fromPosition, toPosition)
-        return true
-    }
-
     fun clearItems() {
-        items.clear()
-        notifyDataSetChanged()
+        items = emptyList()
     }
 
     fun updateViewHolderProvider(holderProvider: ViewHolderProvider<Item>) {
@@ -172,5 +122,25 @@ class EmptyViewHolder(itemView: View): ItemsAdapter.ItemViewHolder<Any>(itemView
     override fun setOnItemLongClickListener(onItemLongClickListener: OnItemLongClickListener?, item: Any, position: Int) {
 
     }
+}
 
+fun <Item> ItemsAdapter<Item>.update(
+        initialValue: List<Item> = emptyList(),
+        areItemsTheSame: (Item, Item) -> Boolean = { old, new -> old == new }
+) = Delegates.observable(initialValue) { _, old, new ->
+
+    val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+
+        override fun getOldListSize(): Int = old.size
+
+        override fun getNewListSize(): Int = new.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+                areItemsTheSame(old[oldItemPosition], new[newItemPosition])
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+                old[oldItemPosition] == new[newItemPosition]
+
+    })
+    diff.dispatchUpdatesTo(this)
 }
