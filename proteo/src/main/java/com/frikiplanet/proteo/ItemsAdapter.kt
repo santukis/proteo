@@ -11,7 +11,9 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
                          areItemsTheSame: (Item, Item) -> Boolean = { old, new -> old == new }) :
         RecyclerView.Adapter<ItemsAdapter.ItemViewHolder<Item>>() {
 
-    private var items: List<Item> by update(emptyList(), areItemsTheSame = areItemsTheSame)
+    var items: List<Item> by update(emptyList(), areItemsTheSame = areItemsTheSame)
+        private set
+
     private var clickListener: OnItemClickListener? = null
     private var longClickListener: OnItemLongClickListener? = null
 
