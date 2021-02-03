@@ -1,17 +1,33 @@
 package com.frikiplanet.proteo
 
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.properties.Delegates
 
-class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item>,
-                         areItemsTheSame: (Item, Item) -> Boolean = { old, new -> old == new }) :
-        RecyclerView.Adapter<ItemsAdapter.ItemViewHolder<Item>>() {
+class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item>) : RecyclerView.Adapter<ItemsAdapter.ItemViewHolder<Item>>() {
 
-    var items: List<Item> by update(emptyList(), areItemsTheSame = areItemsTheSame)
+    private var areItemsTheSame: (Item, Item) -> Boolean = { old, new -> old == new }
+
+    var items: List<Item> by Delegates.observable(mutableListOf()) { _, old, new ->
+
+        val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+
+            override fun getOldListSize(): Int = old.size
+
+            override fun getNewListSize(): Int = new.size
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+                    areItemsTheSame(old[oldItemPosition], new[newItemPosition])
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+                    old[oldItemPosition] == new[newItemPosition]
+
+        })
+        diff.dispatchUpdatesTo(this)
+    }
         private set
 
     private var clickListener: OnItemClickListener? = null
@@ -19,8 +35,7 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
 
     override fun getItemId(position: Int): Long = items[position].hashCode().toLong()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder<Item> =
-            viewHolderProvider.getViewHolder(parent, viewType)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder<Item> = viewHolderProvider.getViewHolder(parent, viewType)
 
     override fun onBindViewHolder(holder: ItemViewHolder<Item>, position: Int) {
         val item = items[position]
@@ -33,7 +48,8 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
 
     override fun getItemCount(): Int = items.size
 
-    fun showItems(items: List<Item>) {
+    fun showItems(items: List<Item>, areItemsTheSame: (Item, Item) -> Boolean = { old, new -> old == new }) {
+        this.areItemsTheSame = areItemsTheSame
         this.items = items
     }
 
@@ -98,51 +114,14 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
         open fun setOnItemClickListener(onItemClickListener: OnItemClickListener?, item: Item, position: Int) {}
         open fun setOnItemLongClickListener(onItemLongClickListener: OnItemLongClickListener?, item: Item, position: Int) {}
     }
+
+    abstract class ItemBindingViewHolder<Item>(protected val binding: ViewDataBinding): ItemViewHolder<Item>(binding.root)
+
 }
 
-open class ViewHolderProvider<Item>(private val itemViewHolder: Class<out RecyclerView.ViewHolder> = EmptyViewHolder::class.java,
-                                    private val layoutRes: Int) {
+open class ViewHolderProvider<Item>(private val itemViewHolder: ItemsAdapter.ItemViewHolder<Item>) {
 
-    open fun getItemViewType(position: Int, item: Item): Int = -1
+    open fun getItemViewType(position: Int, item: Item): Int = position
 
-    open fun getViewHolder(parent: ViewGroup, viewType: Int): ItemsAdapter.ItemViewHolder<Item> {
-        val view = LayoutInflater.from(parent.context).inflate(layoutRes, parent, false)
-        return itemViewHolder.getConstructor(View::class.java).newInstance(view) as ItemsAdapter.ItemViewHolder<Item>
-    }
-}
-
-class EmptyViewHolder(itemView: View): ItemsAdapter.ItemViewHolder<Any>(itemView) {
-
-    override fun bind(value: Any, position: Int) {
-
-    }
-
-    override fun setOnItemClickListener(onItemClickListener: OnItemClickListener?, item: Any, position: Int) {
-
-    }
-
-    override fun setOnItemLongClickListener(onItemLongClickListener: OnItemLongClickListener?, item: Any, position: Int) {
-
-    }
-}
-
-fun <Item> ItemsAdapter<Item>.update(
-        initialValue: List<Item> = emptyList(),
-        areItemsTheSame: (Item, Item) -> Boolean = { old, new -> old == new }
-) = Delegates.observable(initialValue) { _, old, new ->
-
-    val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-
-        override fun getOldListSize(): Int = old.size
-
-        override fun getNewListSize(): Int = new.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                areItemsTheSame(old[oldItemPosition], new[newItemPosition])
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-                old[oldItemPosition] == new[newItemPosition]
-
-    })
-    diff.dispatchUpdatesTo(this)
+    open fun getViewHolder(parent: ViewGroup, viewType: Int): ItemsAdapter.ItemViewHolder<Item> = itemViewHolder
 }
