@@ -2,9 +2,9 @@ package com.frikiplanet.proteo
 
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import kotlin.properties.Delegates
 
 class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item>) : RecyclerView.Adapter<ItemsAdapter.ItemViewHolder<Item>>() {
@@ -115,7 +115,7 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
         open fun setOnItemLongClickListener(onItemLongClickListener: OnItemLongClickListener?, item: Item, position: Int) {}
     }
 
-    abstract class ItemBindingViewHolder<Item>(protected val binding: ViewDataBinding): ItemViewHolder<Item>(binding.root)
+    abstract class ItemBindingViewHolder<Item>(protected val binding: ViewBinding): ItemViewHolder<Item>(binding.root)
 
 }
 
