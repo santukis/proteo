@@ -35,7 +35,7 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
 
     override fun getItemId(position: Int): Long = items[position].hashCode().toLong()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder<Item> = viewHolderProvider.getViewHolder(parent, viewType)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder<Item> = viewHolderProvider.itemViewHolder(parent, viewType)
 
     override fun onBindViewHolder(holder: ItemViewHolder<Item>, position: Int) {
         val item = items[position]
@@ -119,9 +119,7 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
 
 }
 
-open class ViewHolderProvider<Item>(private val itemViewHolder: ItemsAdapter.ItemViewHolder<Item>) {
+open class ViewHolderProvider<Item>(val itemViewHolder: (parent: ViewGroup, viewType: Int) -> ItemsAdapter.ItemViewHolder<Item>) {
 
     open fun getItemViewType(position: Int, item: Item): Int = position
-
-    open fun getViewHolder(parent: ViewGroup, viewType: Int): ItemsAdapter.ItemViewHolder<Item> = itemViewHolder
 }
