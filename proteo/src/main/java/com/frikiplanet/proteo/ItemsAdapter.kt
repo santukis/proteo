@@ -115,7 +115,7 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
         open fun setOnItemLongClickListener(onItemLongClickListener: OnItemLongClickListener?, item: Item, position: Int) {}
     }
 
-    abstract class ItemBindingViewHolder<Item>(protected val binding: ViewBinding): ItemViewHolder<Item>(binding.root)
+    abstract class ItemBindingViewHolder<Item, Binding : ViewBinding>(protected val binding: Binding): ItemViewHolder<Item>(binding.root)
 
 }
 
