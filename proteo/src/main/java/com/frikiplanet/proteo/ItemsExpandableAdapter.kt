@@ -9,10 +9,10 @@ import android.widget.ExpandableListView
 import androidx.annotation.LayoutRes
 import java.lang.Exception
 
-class ItemsExpandableAdapter(private val expandableViewProvider: ExpandableViewProvider) : BaseExpandableListAdapter(),
+class ItemsExpandableAdapter<Item: ExpandableItem>(private val expandableViewProvider: ExpandableViewProvider<Item>) : BaseExpandableListAdapter(),
         ExpandableListView.OnChildClickListener, ExpandableListView.OnGroupClickListener {
 
-    private var items: MutableList<ExpandableItem> = mutableListOf()
+    private var items: MutableList<Item> = mutableListOf()
 
     private var onGroupClickListener: OnItemClickListener? = null
 
@@ -35,14 +35,14 @@ class ItemsExpandableAdapter(private val expandableViewProvider: ExpandableViewP
     override fun hasStableIds(): Boolean = true
 
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup): View {
-        val group = getGroup(groupPosition) as ExpandableItem
+        val group = getGroup(groupPosition) as Item
         val view = getView(parent.context, convertView, expandableViewProvider.groupLayout)
         expandableViewProvider.bindGroup(view, group, groupPosition, isExpanded)
         return view
     }
 
     override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup): View {
-        val child = getChild(groupPosition, childPosition) as ExpandableItem
+        val child = getChild(groupPosition, childPosition) as Item
         val view = getView(parent.context, convertView, expandableViewProvider.childLayout)
         expandableViewProvider.bindChild(view, child, groupPosition, childPosition, isLastChild)
         return view
@@ -64,32 +64,32 @@ class ItemsExpandableAdapter(private val expandableViewProvider: ExpandableViewP
         return convertView ?: LayoutInflater.from(context).inflate(layoutRes, null, false)
     }
 
-    fun showItems(items: MutableList<ExpandableItem>) {
+    fun showItems(items: MutableList<Item>) {
         this.items = items
         notifyDataSetChanged()
     }
 
-    fun addItems(items: MutableList<out ExpandableItem>) {
+    fun addItems(items: MutableList<out Item>) {
         this.items.addAll(items)
         notifyDataSetChanged()
     }
 
-    fun getItems(): MutableList<out ExpandableItem> = this.items
+    fun getItems(): MutableList<out Item> = this.items
 
-    fun getItem(id: Long): ExpandableItem? {
+    fun getItem(id: Long): Item? {
         getItem(items, id)?.let {
             return it
         }
         return null
     }
 
-    private fun getItem(items: List<ExpandableItem>, id: Long): ExpandableItem? {
+    private fun getItem(items: List<Item>, id: Long): Item? {
         items.forEach { item ->
             if (item.getId() == id) {
                 return item
 
             } else {
-                getItem(item.getChildren(), id)?.let {
+                getItem(item.getChildren() as List<Item>, id)?.let {
                     return it
                 }
             }
@@ -98,12 +98,12 @@ class ItemsExpandableAdapter(private val expandableViewProvider: ExpandableViewP
         return null
     }
 
-    fun addItem(position: Int = 0, item: ExpandableItem) {
+    fun addItem(position: Int = 0, item: Item) {
         this.items.add(position, item)
         notifyDataSetChanged()
     }
 
-    fun getGroupAt(position: Int): ExpandableItem? =
+    fun getGroupAt(position: Int): Item? =
             try {
                 items[position]
 
@@ -111,9 +111,9 @@ class ItemsExpandableAdapter(private val expandableViewProvider: ExpandableViewP
                 null
             }
 
-    fun getChildAt(groupPosition: Int, childPosition: Int): ExpandableItem? =
+    fun getChildAt(groupPosition: Int, childPosition: Int): Item? =
             try {
-                items[groupPosition].getChildren()[childPosition]
+                (items[groupPosition].getChildren() as? List<Item>)?.getOrNull(childPosition)
 
             } catch (exception: Exception) {
                 null
@@ -133,11 +133,11 @@ class ItemsExpandableAdapter(private val expandableViewProvider: ExpandableViewP
     }
 }
 
-open class ExpandableViewProvider(val groupLayout: Int,
+open class ExpandableViewProvider<Item: ExpandableItem>(val groupLayout: Int,
                                   val childLayout: Int) {
 
-    open fun bindGroup(view: View, item: ExpandableItem, groupPosition: Int, isExpanded: Boolean) {}
-    open fun bindChild(view: View, item: ExpandableItem, groupPosition: Int, childPosition: Int, isLastChild: Boolean) {}
+    open fun bindGroup(view: View, item: Item, groupPosition: Int, isExpanded: Boolean) {}
+    open fun bindChild(view: View, item: Item, groupPosition: Int, childPosition: Int, isLastChild: Boolean) {}
 }
 
 interface ExpandableItem {
