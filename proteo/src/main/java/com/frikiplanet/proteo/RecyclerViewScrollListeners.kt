@@ -7,6 +7,10 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.abs
 
@@ -147,4 +151,16 @@ fun RecyclerView.addEndlessScrollListener(
 ) {
     addOnScrollListener(EndlessScrollListener(threshold, onEndReached))
 }
+
+@ExperimentalCoroutinesApi
+fun RecyclerView.addEndlessScrollListener(threshold: Int = 3): Flow<Int> =
+        callbackFlow {
+            val listener = EndlessScrollListener(threshold) { lastVisiblePosition ->
+                offer(lastVisiblePosition)
+            }
+
+            addOnScrollListener(listener)
+
+            awaitClose { removeOnScrollListener(listener) }
+        }
 
