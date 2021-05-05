@@ -3,7 +3,7 @@ package com.frikiplanet.proteo
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class FragmentsAdapter(fragment: Fragment): FragmentStateAdapter(fragment) {
+class FragmentsAdapter(fragment: Fragment): FragmentStateAdapter(fragment.childFragmentManager, fragment.lifecycle) {
 
     private var fragments: MutableList<Fragment> = mutableListOf()
 
