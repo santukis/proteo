@@ -16,7 +16,7 @@ class StatefulRecyclerView @JvmOverloads constructor(
 
     override fun onSaveInstanceState(): Parcelable? {
         super.onSaveInstanceState()
-        
+
         return Bundle().apply {
             putParcelable(LAYOUT_MANAGER_STATE, layoutManager?.onSaveInstanceState())
         }
