@@ -9,12 +9,13 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.frikiplanet.proteo.adapters.ItemsAdapter
+import com.frikiplanet.proteo.adapters.ViewHolderProvider
 
 
 class MainActivity : AppCompatActivity() {
 
     private val adapter: ItemsAdapter<String> by lazy {
-        ItemsAdapter(object : ItemsAdapter.ViewHolderProvider<String>() {
+        ItemsAdapter(object : ViewHolderProvider<String>() {
 
             override val itemViewHolder: (parent: ViewGroup, viewType: Int) -> ItemsAdapter.ItemViewHolder<String>
                 get() = { parent, viewType ->

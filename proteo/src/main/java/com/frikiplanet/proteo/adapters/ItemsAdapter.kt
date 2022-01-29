@@ -83,13 +83,13 @@ class ItemsAdapter<Item>(private var viewHolderProvider: ViewHolderProvider<Item
     }
 
     abstract class ItemBindingViewHolder<Item, Binding : ViewBinding>(protected val binding: Binding): ItemViewHolder<Item>(binding.root)
+}
 
-    abstract class ViewHolderProvider<Item>() {
+abstract class ViewHolderProvider<Item>() {
 
-        abstract val itemViewHolder: (parent: ViewGroup, viewType: Int) -> ItemViewHolder<Item>
+    abstract val itemViewHolder: (parent: ViewGroup, viewType: Int) -> ItemsAdapter.ItemViewHolder<Item>
 
-        abstract val diffUtilCallback: DiffUtil.ItemCallback<Item>
+    abstract val diffUtilCallback: DiffUtil.ItemCallback<Item>
 
-        open fun getItemViewType(position: Int, item: Item): Int = position
-    }
+    open fun getItemViewType(position: Int, item: Item): Int = position
 }
