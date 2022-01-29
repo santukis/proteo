@@ -1,4 +1,4 @@
-package com.frikiplanet.proteo
+package com.frikiplanet.proteo.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -51,12 +51,12 @@ class ItemsExpandableAdapter<Item: ExpandableItem>(private val expandableViewPro
     override fun isChildSelectable(groupPosition: Int, childPosition: Int): Boolean = true
 
     override fun onChildClick(parent: ExpandableListView, view: View, groupPosition: Int, childPosition: Int, id: Long): Boolean {
-        onChildClickListener?.onItemClick(view, getChild(groupPosition, childPosition))
+        onChildClickListener?.invoke(view, getChild(groupPosition, childPosition))
         return false
     }
 
     override fun onGroupClick(parent: ExpandableListView, view: View, groupPosition: Int, id: Long): Boolean {
-        onGroupClickListener?.onItemClick(view, getGroup(groupPosition))
+        onGroupClickListener?.invoke(view, getGroup(groupPosition))
         return false
     }
 

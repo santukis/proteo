@@ -1,4 +1,4 @@
-package com.frikiplanet.proteo
+package com.frikiplanet.proteo.listeners
 
 import android.view.MotionEvent
 import androidx.recyclerview.widget.RecyclerView
@@ -7,6 +7,7 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.frikiplanet.proteo.adapters.ItemsAdapter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

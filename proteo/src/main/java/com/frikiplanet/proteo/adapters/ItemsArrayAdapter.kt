@@ -1,4 +1,4 @@
-package com.frikiplanet.proteo
+package com.frikiplanet.proteo.adapters
 
 import android.view.View
 import android.view.ViewGroup

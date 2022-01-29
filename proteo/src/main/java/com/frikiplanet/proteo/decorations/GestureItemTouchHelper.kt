@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.GridLayoutManager
-import com.frikiplanet.proteo.ItemsAdapter
+import com.frikiplanet.proteo.adapters.ItemsAdapter
 
 class GestureItemTouchHelper(
         private val canDrag: () -> Boolean = { false },

@@ -1,4 +1,4 @@
-package com.frikiplanet.proteo
+package com.frikiplanet.proteo.adapters
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
